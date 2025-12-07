@@ -1,21 +1,44 @@
-# GPS Algebraic Script in MATLAB
+# MATLAB Algebraic GPS (Kalman Method)
 
-MATLAB implementation based on *An Underdetermined Linear System for GPS* - Dan Kalman (2002). Includes diagnostics and example data.
+This repository implements the algebraic GPS position solution described in  
+**Dan Kalman (2002), “An Underdetermined Linear System for GPS.”**  
+The project computes the two candidate receiver positions from four satellite signals and illustrates basic GPS noise using MATLAB’s `gpsSensor`.
 
-## Purpose
-This repository contains a MATLAB implementation of Kalman's algebraic solution for the 4-satellite GPS problem (idealized geometric model). The code computes the algebraic candidate solutions for receiver position and time, reports residuals against the original range equations, and returns physically plausible solutions (time at or after the latest satellite transmit time). It also prints the condition number of the 3×3 linear subsystem to show geometry-induced sensitivity.
+---
 
 ## Files
-- `gps_solve.m` - Main MATLAB function.  
-  **Inputs:** `satPos` (4×3 matrix), `tVec` (4×1 vector).  
-  **Outputs:** `solutions` (candidate rows containing `[t, x, y, z, sphResid, r1, r2, r3, r4]`), `physSolutions` (subset with `t >= max(t_i)`), `condA` (condition number of the 3×3 linear subsystem).
-- `example_run.m` - Example script: runs `gps_solve` with canidate selection, results display, and basic `gpsSensor` showcase. 
-- `code.zip`- Zip containing `gps_solve.m` and `example_run.m` for easy upload to MATLAB Online or the GUI.
 
-## Quick usage
+### `gps_solve.m`
+Algebraic solver implementing Kalman’s method.
+
+- **Input:**  
+  `satPos` (4×3 satellite coordinates), `tVec` (4×1 transmit times)
+- **Output:**  
+  `solutions` — rows of `[t, x, y, z, sphResid, r1–r4]`  
+  `condA` — condition number of the 3×3 subsystem  
+- Note: This function **does not** select a candidate; it returns both algebraic solutions.
+
+### `run.m`
+Example script that:
+
+1. Calls `gps_solve`
+2. Computes residuals for each algebraic candidate  
+3. Selects the preferred candidate using:
+   - Physical-time rule \(t \ge \max_i t_i\) when possible  
+   - Otherwise, smallest residual
+4. Prints a concise summary  
+5. Shows a minimal `gpsSensor` noise demonstration (altitude only)
+
+---
+
+## Quick Start
+
 ```matlab
-% in MATLAB
-satPos = [1 2 0; 2 0 2; 1 1 1; 2 1 0];
-tVec   = [11.99; 8.23; 33.30; 10.47];
-[sols, phys, condA] = gps_solve(satPos, tVec);
-```
+satPos = [1 2 0;
+          2 0 2;
+          1 1 1;
+          2 1 0];
+tVec = [11.99; 8.23; 33.30; 10.47];
+
+[solutions, condA] = gps_solve(satPos, tVec);
+run   % prints chosen candidate + gpsSensor noise summary
