@@ -1,44 +1,32 @@
 # MATLAB Algebraic GPS (Kalman Method)
 
-This repository implements the algebraic GPS position solution described in  
-**Dan Kalman (2002), “An Underdetermined Linear System for GPS.”**  
-The project computes the two candidate receiver positions from four satellite signals and illustrates basic GPS noise using MATLAB’s `gpsSensor`.
+MATLAB implementation of the algebraic GPS solution from  
+Kalman (2002), “An Underdetermined Linear System for GPS.”
+Computes two candidate receiver locations from four satellites and includes a minimal GPS noise demo.
 
----
 
 ## Files
-
-### `gps_solve.m`
-Algebraic solver implementing Kalman’s method.
-
-- **Input:**  
-  `satPos` (4×3 satellite coordinates), `tVec` (4×1 transmit times)
-- **Output:**  
-  `solutions` — rows of `[t, x, y, z, sphResid, r1–r4]`  
-  `condA` — condition number of the 3×3 subsystem  
-- Note: This function **does not** select a candidate; it returns both algebraic solutions.
-
-### `run.m`
-Example script that:
-
-1. Calls `gps_solve`
-2. Computes residuals for each algebraic candidate  
-3. Selects the preferred candidate using:
-   - Physical-time rule \(t \ge \max_i t_i\) when possible  
-   - Otherwise, smallest residual
-4. Prints a concise summary  
-5. Shows a minimal `gpsSensor` noise demonstration (altitude only)
+- **gps_solve.m** - Returns algebraic candidates `[t, x, y, z, r1–r4]` and `condA`.  
+- **run.m** - Selects the better candidate (time rule, residuals) and shows brief `gpsSensor` noise output.
+- **code.zip** - Contains `gps_solve.m` and `run.m` files.
+- **report.pdf** - Write-up summarizing the method and results for a linear algebra deliverable.
 
 ---
 
-## Quick Start
-
+## Usage
 ```matlab
-satPos = [1 2 0;
-          2 0 2;
-          1 1 1;
-          2 1 0];
-tVec = [11.99; 8.23; 33.30; 10.47];
-
 [solutions, condA] = gps_solve(satPos, tVec);
-run   % prints chosen candidate + gpsSensor noise summary
+run   % prints chosen candidate + gpsSensor summary
+```
+
+## Example
+```matlab
+cand1: t=19.40  maxRes=10.03
+cand2: t= 9.67  maxRes= 4.29
+Chosen: cand2
+
+```
+---
+
+## References
+Kalman (2002); MathWorks (gpsSensor).
